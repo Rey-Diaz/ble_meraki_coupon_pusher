@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types'; // Import PropTypes
 import './App.css';
-import Footer from './components/Footer';
-import NavBar from './components/NavBar';
+import Footer from './components/core/Footer';
+import NavBar from './components/core/NavBar';
 
 // Define propTypes
 const propTypes = {

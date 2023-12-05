@@ -1,8 +1,7 @@
-import { FC } from 'react';
-import '../styles/CustomStyles.css';
-import React from 'react';
 
-const NavBar: FC = () => {
+import '../../styles/CustomStyles.css';
+
+const NavBar = () => {
     const hiddenLinks = false;
 
     return (

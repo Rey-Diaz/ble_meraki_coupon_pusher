@@ -1,12 +1,8 @@
-import { FC } from 'react';
-import '../styles/CustomStyles.css';
-import React from 'react';
 
-interface FooterProps {
-  timeAndLocation: string | null;
-}
+import PropTypes from 'prop-types'; // Import PropTypes
+import '../../styles/CustomStyles.css';
 
-const Footer: FC<FooterProps> = ({ timeAndLocation }) => {
+const Footer = ({ timeAndLocation }) => {
     return (
         <footer className="footer">
             <div className="footer__logo">
@@ -22,6 +18,11 @@ const Footer: FC<FooterProps> = ({ timeAndLocation }) => {
             </div>
         </footer>
     );
+};
+
+// Define propTypes for the timeAndLocation prop
+Footer.propTypes = {
+    timeAndLocation: PropTypes.string,
 };
 
 export default Footer;
