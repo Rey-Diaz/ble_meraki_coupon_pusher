@@ -8,7 +8,7 @@ import DistanceDataComponent from './components/pages/tablepage'; // Import the 
 import NotificationPage from './components/pages/notificationpage';
 
 function App() {
-  const [devices, setDevices] = useState([]); // Mock data or fetch from API
+  const [devices] = useState([]); // Mock data or fetch from API
   const [notification, setNotification] = useState('');
 
   const handleTriggerCoupon = (deviceId) => {
