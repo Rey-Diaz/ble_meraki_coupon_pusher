@@ -13,8 +13,9 @@ const UserNotification = ({ message, onClose }) => {
 
 
 UserNotification.propTypes = {
-    message: PropTypes.string.isRequired, // Ensure message is a required string
-    onClose: PropTypes.func.isRequired,   // Ensure onClose is a required function
-  };
+    message: PropTypes.string.isRequired,
+    notificationMessage: PropTypes.string,
+    onClose: PropTypes.func, // Make onClose optional
+};
 
 export default UserNotification;

@@ -1,0 +1,59 @@
+{
+    "id": "root",
+    "name": "Project",
+    "children": [
+      {
+        "id": "src",
+        "name": "src",
+        "children": [
+          {
+            "id": "components",
+            "name": "components",
+            "children": [
+              {
+                "id": "header",
+                "name": "Header.js"
+              },
+              {
+                "id": "footer",
+                "name": "Footer.js"
+              }
+            ]
+          },
+          {
+            "id": "utils",
+            "name": "utils",
+            "children": [
+              {
+                "id": "api",
+                "name": "api.js"
+              }
+            ]
+          },
+          {
+            "id": "app",
+            "name": "App.js"
+          },
+          {
+            "id": "index",
+            "name": "index.js"
+          }
+        ]
+      },
+      {
+        "id": "public",
+        "name": "public",
+        "children": [
+          {
+            "id": "index_html",
+            "name": "index.html"
+          }
+        ]
+      },
+      {
+        "id": "package_json",
+        "name": "package.json"
+      }
+    ]
+  }
+  
