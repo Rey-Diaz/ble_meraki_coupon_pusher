@@ -55,6 +55,8 @@ const Header = () => {
                 >
                     <MenuItem onClick={handleClose} component={RouterLink} to="/">Home</MenuItem>
                     <MenuItem onClick={handleClose} component={RouterLink} to="/tablepage">App</MenuItem>
+                    <MenuItem onClick={handleClose} component={RouterLink} to="/NotificationPage">Notification Page</MenuItem>
+                    
                     {/* Add more menu items here */}
                 </Menu>
                 <Typography variant="h6" sx={{

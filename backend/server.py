@@ -1,44 +1,55 @@
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import PlainTextResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
+from meraki import DashboardAPI
 from dotenv import load_dotenv
 import os
 import logging
 import json
 import asyncio
-from collections import deque
 
 # Load environment variables
 load_dotenv()
-
-# Create FastAPI app instance
-app = FastAPI()
-
-origins = ["http://localhost:8000",
-           "http://127.0.0.1:8000",
-           "http://localhost:5173",
-           "http://127.0.0.1:5173",
-           "http://localhost:5173",
-           "http://127.0.0.1:8000",
-           "*"
-           ]  # Replace with your React app's URL
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "OPTIONS"],
-    allow_headers=["*"],
-)
-
-# Environment variables
+MERAKI_API_KEY = os.getenv("MERAKI_API_KEY")
+MERAKI_NETWORK_ID = os.getenv("MERAKI_NETWORK_ID")
 MERAKI_VALIDATOR = os.getenv("MERAKI_VALIDATOR")
 MERAKI_SECRET = os.getenv("MERAKI_SECRET")
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 
-# Data storage with a cap of 10 items
-data_storage = deque(maxlen=10)
+# Create FastAPI app instance
+app = FastAPI()
+
+# CORS configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Data storage
+data_storage = {}
+beacon_data = {}
+
+async def fetch_beacon_data():
+    dashboard = DashboardAPI(api_key=MERAKI_API_KEY)
+    devices = dashboard.networks.getNetworkDevices(MERAKI_NETWORK_ID)
+
+    for device in devices:
+        if "beaconIdParams" in device:
+            beacon_params = device["beaconIdParams"]
+            beacon_data[device["mac"]] = {
+                "uuid": beacon_params["uuid"],
+                "major": beacon_params["major"],
+                "minor": beacon_params["minor"]
+            }
+
+@app.on_event("startup")
+async def startup_event():
+    await fetch_beacon_data()
 
 @app.get("/")
 def read_root():
@@ -62,36 +73,46 @@ async def post_meraki_scanning(request: Request):
     observations = data.get("data", {}).get("observations", [])
     logging.info("Received observations: " + json.dumps(observations, indent=4))
 
-    processed_data = process_meraki_data(data)
+    process_meraki_data(data)
 
-    global data_storage
-    data_storage.append(processed_data)  # Add new data to the storage
+    return {"message": "Data processed successfully"}
 
-    return {"message": "Data processed successfully", "data": processed_data}
+def parse_raw_data(raw_data):
+    # Placeholder for parsing logic
+    # Implement parsing based on your rawData format
+    return {
+        "uuid": "extracted_uuid",  # Replace with actual parsing logic
+        "major": "extracted_major",  # Replace with actual parsing logic
+        "minor": "extracted_minor"   # Replace with actual parsing logic
+    }
 
 def process_meraki_data(data):
     observations = data.get("data", {}).get("observations", [])
-    ble_devices = []
 
     for observation in observations:
-        if 'bleBeacons' in observation:
-            for beacon in observation['bleBeacons']:
-                device_info = {
-                    "client_mac": observation.get("clientMac"),
-                    "uuid": beacon.get("uuid"),
-                    "major": beacon.get("major"),
-                    "minor": beacon.get("minor"),
-                    "rssi": beacon.get("rssi")
-                }
-                ble_devices.append(device_info)
+        client_mac = observation.get("clientMac")
+        latest_record = observation.get("latestRecord", {})
+        nearest_ap_mac = latest_record.get("nearestApMac")
+        nearest_ap_rssi = latest_record.get("nearestApRssi")
 
-    return ble_devices
+        beacon_info = beacon_data.get(nearest_ap_mac, {"uuid": "N/A", "major": "N/A", "minor": "N/A"})
+
+        device_info = {
+            "client_mac": client_mac,
+            "uuid": beacon_info.get("uuid"),
+            "major": beacon_info.get("major"),
+            "minor": beacon_info.get("minor"),
+            "rssi": beacon_info.get("rssi"),
+            "name": observation.get("name"),
+            "nearest_ap_mac": nearest_ap_mac,
+            "nearest_ap_rssi": nearest_ap_rssi
+        }
+        data_storage[client_mac] = device_info
 
 async def event_generator():
     while True:
         if data_storage:
-            data = data_storage[-1]  # Send the latest item
-            yield f"data: {json.dumps(data)}\n\n"
+            yield f"data: {json.dumps(list(data_storage.values()))}\n\n"
         await asyncio.sleep(1)
 
 @app.get("/events")

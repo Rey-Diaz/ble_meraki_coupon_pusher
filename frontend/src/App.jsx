@@ -5,6 +5,7 @@ import DeviceTable from './components/tables/DeviceTable';
 import UserNotification from './components/notifications/UserNotification';
 import HomePage from './components/pages/home'; // Import the HomePage component
 import DistanceDataComponent from './components/pages/tablepage'; // Import the HomePage component
+import NotificationPage from './components/pages/notificationpage';
 
 function App() {
   const [devices, setDevices] = useState([]); // Mock data or fetch from API
@@ -23,6 +24,7 @@ function App() {
           <Route path="/notifications" element={<UserNotification message={'hello, below is the users perspective'} notificationMessage={notification} />} />
           <Route path="/" element={<HomePage />} /> {/* Updated this line */}
           <Route path="/tablepage" element={<DistanceDataComponent />} />
+          <Route path="/NotificationPage" element={<NotificationPage />} />
         </Routes>
       </Layout>
     </Router>
