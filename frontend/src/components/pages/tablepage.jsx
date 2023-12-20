@@ -75,8 +75,8 @@ class MerakiDataComponent extends Component {
                   <TableCell>{observation.name || 'N/A'}</TableCell>
                   <TableCell>{observation.client_mac || 'N/A'}</TableCell>
                   <TableCell>{observation.uuid || 'N/A'}</TableCell>
-                  <TableCell>{observation.major || 'N/A'}</TableCell>
-                  <TableCell>{observation.minor || 'N/A'}</TableCell>
+                  <TableCell>{observation.major || '0'}</TableCell>
+                  <TableCell>{observation.minor || '0'}</TableCell>
                   <TableCell>{observation.nearest_ap_mac || 'N/A'}</TableCell>
                   <TableCell>{observation.nearest_ap_rssi || 'N/A'}</TableCell>
                 </TableRow>

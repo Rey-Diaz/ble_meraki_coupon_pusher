@@ -95,19 +95,21 @@ def process_meraki_data(data):
         nearest_ap_mac = latest_record.get("nearestApMac")
         nearest_ap_rssi = latest_record.get("nearestApRssi")
 
-        beacon_info = beacon_data.get(nearest_ap_mac, {"uuid": "N/A", "major": "N/A", "minor": "N/A"})
+        # Update this line to set default values to "0" or appropriate values
+        beacon_info = beacon_data.get(nearest_ap_mac, {"uuid": "0", "major": "0", "minor": "0"})
 
         device_info = {
             "client_mac": client_mac,
             "uuid": beacon_info.get("uuid"),
             "major": beacon_info.get("major"),
             "minor": beacon_info.get("minor"),
-            "rssi": beacon_info.get("rssi"),
+            "rssi": nearest_ap_rssi,
             "name": observation.get("name"),
             "nearest_ap_mac": nearest_ap_mac,
             "nearest_ap_rssi": nearest_ap_rssi
         }
         data_storage[client_mac] = device_info
+
 
 async def event_generator():
     while True:
